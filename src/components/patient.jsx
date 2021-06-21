@@ -10,8 +10,17 @@ class Patient extends Component {
 
   handleId = (id) => {
     axios.get("https://localhost:5001/Patients/" + id).then((response) => {
-      this.setState({ patient: response.data === "" ? {} : response.data });
-      this.props.onCurrentPatient(response.data);
+
+      let patient = Object.assign({}, response.data); 
+      patient.id = id;
+
+      this.setState({ patient });
+      this.props.onCurrentPatient(patient);
+
+      if(patient.name === undefined) {
+        window.alert("This patient ID does not exist. \nPlease fill out the Patient Details then click Add New Patient.");
+      };
+
       this.setState({ isCreate: response.data.name !== undefined });
     });
   };
@@ -24,6 +33,9 @@ class Patient extends Component {
       .then((response) => {
         console.log("PUT : ", response);
       });
+    
+    window.alert("Patient file successfully updated.");
+    window.location.reload();
   };
 
   AddNewPatient = () => {
@@ -33,18 +45,24 @@ class Patient extends Component {
       this.props.onCurrentPatient(patient);
       console.log("POST : ", response);
     });
+
+    window.alert("Patient file successfully added. \nYour New Patient ID is \n" + patient.id);
+    window.location.reload();
   };
+
 
   render() {
     return (
       <React.Fragment>
-        <b>Patient Search Id:</b>
+        <b>Patient ID Search:</b>
         <input
           className="form-control m-2"
           type="number"
-          placeholder="Search by Id"
+          placeholder="Enter your Patient ID" 
           onBlur={(e) => this.handleId(e.target.value)}
         ></input>
+        <button className="btn btn-info btn-sm m-2 ">Search</button>
+
         <br />
         <b>Patient Details:</b>
         <br /><br />
@@ -83,8 +101,6 @@ class Patient extends Component {
         <input
           className="form-control m-2"
           type="date"
-          onfocus="(this.type='date')"
-          onblur="(this.type='text')"
           placeholder="Please Enter Date of Birth YYYY-MM-DD"
           value={this.state.patient.dateOfBirth || ""}
           onChange={(e) =>
@@ -129,15 +145,22 @@ class Patient extends Component {
 
         <button
           type="button"
-          className="btn btn-outline-success  m-2 btn-sm"
-          disabled={this.state.isCreate}
+          className="btn btn-success m-2 btn-sm"
+          disabled={this.state.isCreate ||
+                    this.state.patient.id === undefined ||
+                    this.state.patient.name === undefined ||
+                    this.state.patient.healthNumber === undefined ||
+                    this.state.patient.dateOfBirth === undefined ||
+                    this.state.patient.phoneNumber === undefined ||
+                    this.state.patient.address === undefined
+          }
           onClick={this.AddNewPatient}
         >
           Add New Patient
         </button>
         <button
           type="button"
-          class="btn btn-outline-warning m-2 btn-sm"
+          className="btn btn-warning m-2 btn-sm"
           disabled={!this.state.isCreate}
           onClick={this.UpdatePatient}
         >

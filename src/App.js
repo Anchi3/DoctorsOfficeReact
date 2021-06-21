@@ -1,6 +1,5 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
-import NavBar from "./components/navbar";
 import React, { Component } from "react";
 import axios from "axios";
 import Doctors from "./components/doctors";
@@ -12,7 +11,6 @@ class App extends Component {
     patient: {},
     currentDoctorId: 0,
     currentSymptom: "",
-    
   };
 
   componentDidMount() {
@@ -22,7 +20,7 @@ class App extends Component {
     });
   }
 
-  handleCurrentDoctor = (event) => {
+  handleCurrentDoctor = (event) => { 
     console.log(event.target.value);
     this.setState({ currentDoctorId: event.target.value });
   };
@@ -36,32 +34,27 @@ class App extends Component {
     this.setState({ currentSymptom: e.target.value });
   };
   
-
   handleIntake = () => {
     let appointment = {
       symptoms: this.state.currentSymptom, 
       DoctorId: this.state.currentDoctorId, 
       PatientId: this.state.patient.id
     };
-    
+
     axios.post("https://localhost:5001/IntakeForms", appointment).then((response) => {
       console.log("POST : ", response);
     });
 
     window.alert("Your Appointment has been successfully booked!");
-    
+    window.location.reload();
   };
-
-
-  
 
 
   render() {
     return (
       <React.Fragment>
-        <NavBar>Doctor's Patient Intake Form</NavBar>
         <main className="container">
-          
+          <h1>Doctor's Patient Intake Form</h1>
           <hr />
           <b>Please Choose Your Preferred Physician:</b><br /><br />
           <Doctors
@@ -70,7 +63,8 @@ class App extends Component {
           ></Doctors>
           <br /><br />
           <hr />
-          <Patient onCurrentPatient={this.handleCurrentPatient}></Patient>
+          <Patient onCurrentPatient={this.handleCurrentPatient}
+          ></Patient>
           <hr />
           <div className="mb-3">
             <label htmlFor="exampleFormControlTextarea1" className="form-label">
@@ -81,10 +75,9 @@ class App extends Component {
               id="exampleFormControlTextarea1"
               rows="3"
               onChange={this.handleSymptom}
-              placeholder="Please limit to 500 characters"
+              placeholder="Please limit to 500 characters only"
             ></textarea>
           </div>
-          
           <button
           type="button"
           className="btn btn-success  m-2 btn-lg"
@@ -97,7 +90,6 @@ class App extends Component {
           >
           Create New Appointment
           </button>
-
         </main>
       </React.Fragment>
 
